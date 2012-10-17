@@ -1,0 +1,11 @@
+application: intrepidheroine
+version: 4
+runtime: python
+api_version: 1
+
+handlers:
+- url: /resources
+  static_dir: resources
+
+- url: /.*
+  script: app.py

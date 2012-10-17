@@ -1,0 +1,80 @@
+    html { 
+		height : 100% 
+		}
+		
+    body {
+		height : 100%; 
+		margin : 0; 
+		padding : 0; 
+		}
+		
+    #map_canvas { 
+		height : 100%;
+		width : 100%;
+		}
+		
+	#header, #databox {
+		margin : 10px;
+		text-align : center;
+		background-color : #f2eee1;
+		border-radius : 5px;
+	}
+	
+	#header {
+		padding : 20px;
+		font-family : Book Antiqua, Palatino, serif;
+		font-size : 36px;
+		color : #594c25;
+	}
+	
+	#databox {
+		position: relative;
+		height : 500px;
+		width : 250px;
+	}
+	
+	#datatitle {
+		width : 200px;
+		margin : 10px 20px 10px 20px;
+		padding : 5px;
+		border-radius : 5px;
+		background-color : #55a390;
+		font-family : Book Antiqua, Palatino, serif;
+		font-size : 20px;
+		color : #f2eee1;
+	}
+	
+	#datatext {
+		width : 200px;
+		margin : 15px 20px 5px 20px;
+		text-align : left;
+		font-family : Helvetica,Arial,sans-serif;
+		font-size : 14px;
+		color : #26240c;
+	}
+	
+	#imagewrapper {
+		position : absolute;
+		bottom : 0;
+		margin : 15px;
+	}
+	
+	.imagebox {
+		border-radius : 10px;
+	}
+	
+	.subtitle {
+		font-family : Helvetica,Arial,sans-serif;
+		font-size : 10px;
+		color : #c4483d;
+	}
+	
+	.date {
+		font-family : Helvetica,Arial,sans-serif;
+		font-size : 10px;
+		color : #94865d;
+	}
+	
+
+	
+	

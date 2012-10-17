@@ -1,0 +1,147 @@
+<html>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 500px; width: 500px; margin: 15px; float: left }
+	  #datainput { margin: 15px; float: left }
+    </style>
+	
+    <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDml8K6lGP_FoE7gH8ffhCAdN8Dkltf1as&sensor=false">
+    </script>
+	
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+	
+
+    <script type="text/javascript">
+	var map, focus, fMarker, searchBtn, searchBox, latBox, lngBox, searchBound;
+	var searchMarkers = [];
+	
+    function initialize() {
+		focus = new google.maps.LatLng(35.41, 135.83);
+		searchBtn = document.getElementById("searchBtn");
+		searchBox = document.getElementById("searchTxt");
+		latBox = document.getElementById("latbox");
+		lngBox = document.getElementById("lngbox");
+		
+        var mapOptions = {
+          center: focus,
+          zoom: 6,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+		focusMarker();
+			
+		var service = new google.maps.places.PlacesService(map);
+			
+		google.maps.event.addDomListener(searchBtn, 'click', function(){
+			var txt = searchBox.value;
+			var request = {
+				bounds: map.getBounds(),
+				query: txt
+			};
+			service.textSearch(request,callback);
+		});
+    };
+	  
+	function callback(results, status) {
+		if (status == google.maps.places.PlacesServiceStatus.OK) {
+			for (var i = 0; i <searchMarkers.length; i++){
+				searchMarkers[i].setMap(null);
+				searchMarkers[i] = null;
+			}
+			
+			searchMarkers = [];
+			searchBound = new google.maps.LatLngBounds();
+		
+			var limit = Math.min(results.length,10);
+			for (var i = 0; i <limit; i++){
+				createMarker(results[i]);
+			}
+			
+			map.fitBounds(searchBound);
+			if (map.getZoom() > 15){
+				map.setZoom(15);
+			};
+		}
+	};
+	  
+	function createMarker(place){
+		var marker = new google.maps.Marker({
+			position: place.geometry.location,
+			title: place.name,
+			icon: "resources/markerblue.png",
+			map: map
+		});
+		
+		searchMarkers.push(marker);
+		searchBound.extend(marker.position);
+		
+		var infowindow = new google.maps.InfoWindow({ 
+			content: marker.title,
+			size: new google.maps.Size(10,10)
+		});
+		
+		google.maps.event.addListener(marker, 'click', function() {
+			infowindow.open(map,marker);
+		});
+		
+		google.maps.event.addListener(marker, 'dblclick', function() {
+			fMarker.setMap(null);
+			latBox.value = marker.position.lat();
+			lngBox.value = marker.position.lng();
+		});
+	};
+	
+	function focusMarker(){
+		fMarker = new google.maps.Marker({
+			position: focus,
+			icon: "resources/markerbrown.png"
+		});
+		
+		google.maps.event.addListener(map, 'dblclick', function(event) {
+			focus = event.latLng;
+			fMarker.position = focus;
+			fMarker.setMap(map);
+			latBox.value = focus.lat();
+			lngBox.value = focus.lng();
+		});
+	};
+	  
+	google.maps.event.addDomListener(window, 'load', initialize);
+	
+    </script>
+<body>
+
+	<div id="wrapper">
+	<div id="map_canvas"></div>
+	<div id="datainput"> 
+		<div>Search:&emsp;<input type="text" id="searchTxt">&emsp;<button type="button" id="searchBtn">Go!</button></div><br><br>
+	
+		<form action="/submit" enctype="multipart/form-data" method="post">
+			<table>
+			<tr><td>Title:&emsp;</td><td><input type="text" name="title">&emsp;&emsp;<input type="checkbox" name="path" value="path" /> Major Stop?</td></tr>
+			<tr><td>Date:&emsp;</td><td><input type="date" id="visit" name="visit"></td></tr>
+			<tr><td>Latitude:&emsp;</td><td><input id="latbox" type="text" name="lat"></td></tr>
+			<tr><td>Longitude:&emsp;</td><td><input id="lngbox" type="text" name="lng"></td></tr>
+			<tr><td>Picture:&emsp;</td><td><input name="image" type="file"></td></tr>
+			<tr><td>Blurb:&emsp;</td><td><textarea name="content" rows="3" cols="60"></textarea></td></tr>
+			<tr><td></td><td><input type="submit" value="Submit"></td></tr>
+			</table>
+		</form>
+	</div>
+	<br><br>
+
+	<table border="1">
+	{% for pt in points %}
+		<tr>
+		<td>{{ pt.title }}</td><td>{{ pt.dateStr }}</td><td>{{ pt.path }}</td><td>{{ pt.content }}</td><td>{{ pt.lat }}</td><td>{{ pt.lng }}</td>
+		<td><a href="img?img_id={{ pt.key }}&tile=true" rel="lightbox" >Picture</a></td><td><a href="del?key={{ pt.key }}">Delete</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+	</div>
+	
+</body>
+</html>
